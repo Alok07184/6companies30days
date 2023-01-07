@@ -1,0 +1,58 @@
+150 Evaluate Reverse Polish Notation
+
+You are given an array of strings tokens that represents an arithmetic expression in a Reverse Polish Notation.
+
+Evaluate the expression. Return an integer that represents the value of the expression.
+
+Note that:
+
+The valid operators are '+', '-', '*', and '/'.
+Each operand may be an integer or another expression.
+The division between two integers always truncates toward zero.
+There will not be any division by zero.
+The input represents a valid arithmetic expression in a reverse polish notation.
+The answer and all the intermediate calculations can be represented in a 32-bit integer.
+
+
+
+SOLUTION :
+
+class Solution {
+    public int evalRPN(String[] token) {
+        Stack<String> stck = new Stack<>();
+        for(int i=0;i<token.length;i++)
+        {
+            if(token[i].equals("*") || token[i].equals("+") || token[i].equals("-") || token[i].equals("/"))
+            {
+                String value1 = stck.pop();
+                String value2 = stck.pop();
+                int val1  = Integer.parseInt(value1);
+                int val2 = Integer.parseInt(value2);
+                if(token[i].equals("*"))
+                {
+                    int ans = val1 * val2;
+                    stck.push(Integer.toString(ans));
+                }
+                else if(token[i].equals("+"))
+                {
+                    int ans = val1 + val2;
+                    stck.push(Integer.toString(ans));
+                }
+                else if(token[i].equals("-"))
+                {
+                    int ans = val2 - val1;
+                    stck.push(Integer.toString(ans));
+                }
+                else{
+                    int ans = val2 / val1;
+                   
+                    stck.push(Integer.toString(ans));
+                }
+            }
+            else {
+                stck.push(token[i]);
+            }
+        }
+        return Integer.parseInt(stck.peek());
+    }
+}
