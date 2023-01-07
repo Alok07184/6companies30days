@@ -1,0 +1,69 @@
+2467. Most Profitable Path in a Tree
+
+There is an undirected tree with n nodes labeled from 0 to n - 1, rooted at node 0. You are given a 2D integer array edges of length n - 1 where edges[i] = [ai, bi] indicates that there is an edge between nodes ai and bi in the tree.
+
+At every node i, there is a gate. You are also given an array of even integers amount, where amount[i] represents:
+
+the price needed to open the gate at node i, if amount[i] is negative, or,
+the cash reward obtained on opening the gate at node i, otherwise.
+The game goes on as follows:
+
+Initially, Alice is at node 0 and Bob is at node bob.
+At every second, Alice and Bob each move to an adjacent node. Alice moves towards some leaf node, while Bob moves towards node 0.
+For every node along their path, Alice and Bob either spend money to open the gate at that node, or accept the reward. Note that:
+If the gate is already open, no price will be required, nor will there be any cash reward.
+If Alice and Bob reach the node simultaneously, they share the price/reward for opening the gate there. In other words, if the price to open the gate is c, then both Alice and Bob pay c / 2 each. Similarly, if the reward at the gate is c, both of them receive c / 2 each.
+If Alice reaches a leaf node, she stops moving. Similarly, if Bob reaches node 0, he stops moving. Note that these events are independent of each other.
+Return the maximum net income Alice can have if she travels towards the optimal leaf node.
+class Solution {
+    static int [] par;
+    static int result; 
+    static int mostProfitablePath(int[][] edges, int bob, int[] amount) {
+        par = new int [amount.length];
+        List<List<Integer>> adj = new ArrayList<>();
+        result = (int)(-1e9);
+        for(int i = 0; i < amount.length; i++) adj.add(new ArrayList<>());
+        for(int []edge: edges){
+            adj.get(edge[0]).add(edge[1]);
+            adj.get(edge[1]).add(edge[0]);
+        }
+        setPar(0, adj, -1, par);
+        Map<Integer, Integer> bobDist = new HashMap<>();
+        int cur = bob, cnt = 0;
+        while(cur != par[cur]){
+            bobDist.put(cur, cnt++);
+            cur = par[cur];
+        }
+        getResult(0, adj, bobDist, 0, amount, -1, amount[0]);
+        return result;
+    }
+
+    static void getResult(int node, List<List<Integer>> adj, Map<Integer, Integer> bobDist,
+                         int dist, int[] amount, int p, int income) {
+        int ans = amount[node];
+        boolean flag = true;
+        for(int child : adj.get(node)){
+            if(child != p){
+                if(bobDist.containsKey(child) && dist+1 == bobDist.get(child))
+                    getResult(child, adj, bobDist, dist+1, amount, node, amount[child]/2 + income);
+                else if(bobDist.get(child) == null || dist + 1 < bobDist.get(child))
+                    getResult(child, adj, bobDist, dist+1, amount, node, amount[child] + income);
+                else getResult(child, adj, bobDist, dist+1, amount, node, income);
+                flag = false;
+            }
+        }
+        if(flag){
+            //leaf node.
+            result = Math.max(result, income);
+        }
+    }
+
+    static void setPar(int cur, List<List<Integer>> adj, int p, int [] par){
+        for(int child : adj.get(cur)){
+            if(child != p){
+                par[child] = cur;
+                setPar(child, adj, cur, par);
+            }
+        }
+    }
+}
