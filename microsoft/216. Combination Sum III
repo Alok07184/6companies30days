@@ -1,0 +1,35 @@
+216. Combination Sum III
+
+Find all valid combinations of k numbers that sum up to n such that the following conditions are true:
+
+Only numbers 1 through 9 are used.
+Each number is used at most once.
+Return a list of all possible valid combinations. The list must not contain the same combination twice, and the combinations may be returned in any order.
+
+
+SOLUTION
+
+class Solution {
+    public List<List<Integer>> combinationSum3(int k, int n) {
+        int[] arr = {1,2,3,4,5,6,7,8,9 };
+        List<List<Integer>> ans = new ArrayList<>();
+        combination(arr,k,n,ans,0,new ArrayList<>());
+        return ans;
+    }
+    public void combination(int[] arr, int k, int n, List<List<Integer>> ans, int i, List<Integer> ds)
+    {
+        if(n==0 && ds.size() == k)
+        {
+            ans.add(new ArrayList<>(ds));
+            return;
+        }
+        if(i < 9 && arr[i] <= n)
+        {
+            ds.add(arr[i]);
+            combination(arr,k,n-arr[i],ans,i+1,ds);
+            ds.remove(ds.size()-1);
+        }
+        if(i<9)
+        combination(arr,k,n,ans,i+1,ds);
+    }
+}
